@@ -1,13 +1,22 @@
-node {
-  docker.image('maven:3.8.4-openjdk-11').inside('-v /var/run/docker.sock:/var/run/docker.sock') {
+pipeline {
+  agent {
+    dockerContainer 'maven:3.8.4-openjdk-11'
+    }
+  stages {
     stage('Checkout') {
-      checkout scm
+      steps {
+        checkout scm
+      }
     }
     stage('Build') {
-      sh 'mvn clean package'
+      steps {
+        sh 'mvn clean package'
+      }
     }
     stage('Test Connessione') {
-      echo '✅ Jenkins si è connesso correttamente alla repo!'
+      steps {
+        echo '✅ Jenkins si è connesso correttamente alla repo!'
+      }
     }
   }
 }

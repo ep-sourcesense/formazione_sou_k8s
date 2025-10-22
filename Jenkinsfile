@@ -1,20 +1,19 @@
 pipeline {
-  agent any // o agent { label 'il_tuo_agente_con_docker' }
+  // 1. Definisci un agente per il livello pipeline (necessario per l'operazione 'checkout' e per lanciare il container)
+  agent any 
   
   stages {
-    stage('Esegui con Maven Container') {
+    stage('Test Connessione e Build') {
+      // 2. A livello di Stage, usa la sintassi compatta
       agent {
-        // Questo fa eseguire la stage successiva DENTRO il container Docker
-        docker {
-          image 'maven:3.8.4-openjdk-11'
-          // Aggiungi un'opzione per riutilizzare l'agente principale, se utile
-          // reuseNode true 
-        }
+        dockerContainer 'maven:3.8.4-openjdk-11' // Usa dockerContainer per lo Stage
+        // NOTA: 'reuseNode true' non è supportato qui. Se ti serve,
+        // devi usare l'opzione 'docker' A LIVELLO DI PIPELINE o usare 'agent none' qui.
       }
       steps {
-        echo '✅ Jenkins si è connesso correttamente alla repo!'
-        // Puoi anche eseguire comandi che verificano l'immagine, ad esempio
-        sh 'mvn --version' 
+        echo '✅ Jenkins si è connesso correttamente e il container è attivo!'
+        // Esegui i comandi Maven qui dentro il container
+        sh 'mvn --version'
         sh 'java -version'
       }
     }

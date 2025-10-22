@@ -6,9 +6,11 @@ pipeline {
     stage('Test Connessione e Build') {
       // 2. A livello di Stage, usa la sintassi compatta
       agent {
-        dockerContainer 'maven:3.8.4-openjdk-11' // Usa dockerContainer per lo Stage
-        // NOTA: 'reuseNode true' non è supportato qui. Se ti serve,
-        // devi usare l'opzione 'docker' A LIVELLO DI PIPELINE o usare 'agent none' qui.
+        docker {
+          image 'maven:3.8.4-openjdk-11'
+          // Opzionale: Se vuoi riutilizzare il workspace del nodo 'any'
+          // reuseNode true 
+        }
       }
       steps {
         echo '✅ Jenkins si è connesso correttamente e il container è attivo!'

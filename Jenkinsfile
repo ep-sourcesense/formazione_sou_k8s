@@ -1,6 +1,6 @@
 pipeline {
     // 1. Definisci un agente per il livello pipeline
-    agent { label 'jenkins-agent' }
+    agent { label 'Jenkins-agent' }
 
     stages {
         stage('Test Connessione e Build') {

@@ -1,16 +1,51 @@
 pipeline {
-    // 1. Definisci un agente per il livello pipeline
     agent { 
         docker { 
             image 'maven:3.8.1-jdk-11' 
         }
      }
 
+    environment {
+        IMAGE_NAME = "epsourcesense/flask-app-example"
+        IMAGE_TAG = "latest"
+        DOCKER_HUB_CREDENTIALS = "dockerhub-credentials" // ID credenziali Jenkins
+    }
+
     stages {
-        stage('Test Connessione e Build') {
+        stage('Checkout') {
             steps {
-                echo 'Connesso'
+                checkout scm
             }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+                }
+            }
+        }
+
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: "${DOCKER_HUB_CREDENTIALS}", 
+                                                  usernameVariable: 'DOCKER_USER', 
+                                                  passwordVariable: 'DOCKER_PASS')]) {
+                    sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                }
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                sh "docker push ${IMAGE_NAME}:${IMAGE_TAG}"
+            }
+        }
+    }
+
+    post {
+        always {
+            echo "Pipeline completata."
         }
     }
 }
